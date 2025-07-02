@@ -1,0 +1,14 @@
+<h2>Your Favorite Stations</h2>
+
+{% if stations %}
+  {% for station in stations %}
+    <div class="station">
+      <h3>{{ station.name }}</h3>
+      <p><strong>Address:</strong> {{ station.address }}</p>
+      <p>type of battery</p>
+      <p><strong>Battery Types:</strong> {{ station.battery_types }}</p>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>You have no favorite stations yet.</p>
+{% endif %}

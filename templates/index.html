@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EV Battery Swap Station Locator</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYVEE1DQOSusiT5uyCNdEiDIV4Roz0by0"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>EV Battery Swap Station Locator</h1>
+    <form id="searchForm">
+      <input type="text" id="location" placeholder="Enter city or pincode" required>
+      <button type="submit">Search</button>
+    </form>
+    <div id="map" style="height: 400px; margin-top: 20px;"></div>
+    <div id="results"></div>
+  </div>
+  <script>
+    let map;
+    let markers = [];
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 19.0760, lng: 72.8777 },
+        zoom: 10
+      });
+    }
+    window.onload = initMap;
+    document.getElementById("searchForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const query = document.getElementById("location").value;
+      const res = await fetch(`/search?query=${query}`);
+      const stations = await res.json();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+      markers.forEach(marker => marker.setMap(null));
+      markers = [];
+      stations.forEach(station => {
+resultsDiv.innerHTML += `
+  <div>
+    <h2>${station.name}</h2>
+    <p><strong>Address:</strong> ${station.address}</p>
+    <p><strong>Battery Types:</strong> ${station.battery_types}</p>
+  </div>`;
+        const marker = new google.maps.Marker({
+          position: { lat: parseFloat(station.lat), lng: parseFloat(station.lng) },
+          map: map,
+          title: station.name
+        });
+        markers.push(marker);
+      });
+    });
+  </script>
+</body>
+</html>
